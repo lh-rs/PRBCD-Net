@@ -59,7 +59,7 @@ def main():
             img2_path = 'dataset/#4Gloucester/im2.jpg'
             ref_path = 'dataset/#4Gloucester/im3.jpg'
             pse_path = 'dataset/#4Gloucester/pse_data/ae_br.png'
-            m = 0.2
+            m = 0.1 # m = 0.1 or 0.2
         elif dataset == 'Italy':
             setup_seed(2023)
             img1_path = 'dataset/Italy/im1.bmp'
@@ -277,15 +277,15 @@ def main():
             bestPc = 0.5 * img2_1 + 0.5 * img2_2
             last_pc = cv2.imread(pse_path_c)[..., 0]
 
-            Fbefore = 0
+            Fbefore = 1e15
             thresh = np.array(list(range(80, 200))) / 255
             # thresh = np.array(list(range(1, 255))) / 255
             best_th = 0
             for th in thresh:
                 seclect_result = np.where(bestPc > th, 255, 0)
-
-                F0 = 1 / np.sum((seclect_result - last_pc) ** 2 + 1e-15)
-                if F0 > Fbefore:
+                F0 =  np.mean((seclect_result - last_pc) ** 2 )
+                # F0 = 1 / np.sum((seclect_result - last_pc) ** 2 + 1e-15)
+                if F0 < Fbefore:
                     cv2.imwrite(result_path + str(epoch) + '_' + 'bestresult.png', showresult(seclect_result))
                     Fbefore = F0
                     best_th = th
